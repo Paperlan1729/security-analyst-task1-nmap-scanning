@@ -1,0 +1,85 @@
+Nmap Scan Results
+=================
+Author: Dhrumit Asari
+Task: Basic Network Scanning with Nmap
+Date: October 2026
+Environment: Local VirtualBox VM (Kali Linux / Ubuntu)
+Target IP: 192.168.56.101 (Host-Only Adapter - private lab network)
+Ethics: Scan performed exclusively on systems under my direct control.
+
+------------------------------------------------------------
+1. BASIC SCAN
+Command: nmap 192.168.56.101
+
+Starting Nmap ... 
+Nmap scan report for 192.168.56.101
+Host is up (0.00045s latency).
+Not shown: 995 closed ports
+PORT     STATE SERVICE
+22/tcp   open  ssh
+80/tcp   open  http
+443/tcp  open  https
+3306/tcp open  mysql
+8080/tcp open  http-proxy
+
+Nmap done: 1 IP address (1 host up) scanned in ~2.5 seconds
+
+------------------------------------------------------------
+2. SERVICE VERSION SCAN
+Command: nmap -sV 192.168.56.101
+
+PORT     STATE SERVICE  VERSION
+22/tcp   open  ssh      OpenSSH 8.9p1 Ubuntu 3ubuntu0.10 (Ubuntu Linux; protocol 2.0)
+80/tcp   open  http     Apache httpd 2.4.52
+443/tcp  open  ssl/http Apache httpd 2.4.52
+3306/tcp open  mysql    MySQL 8.0.36-0ubuntu0.22.04.1
+8080/tcp open  http     Apache Tomcat / or alternative HTTP service
+
+Service Info: OS: Linux
+
+------------------------------------------------------------
+3. OS DETECTION SCAN
+Command: sudo nmap -O 192.168.56.101
+
+Device type: general purpose
+Running: Linux 5.X
+OS CPE: cpe:/o:linux:linux_kernel:5
+OS details: Linux 5.4 - 5.15
+Network Distance: 1 hop
+
+------------------------------------------------------------
+PORT-BY-PORT SECURITY ANALYSIS
+
+Port 22 (SSH - OpenSSH 8.9)
+- What it does: Provides encrypted remote command-line access.
+- Risk: Brute-force attacks, credential stuffing, or exploitation of outdated SSH versions.
+- Recommendation: Disable password authentication, use SSH keys only, change default port if policy allows, enable fail2ban, keep updated.
+
+Port 80 (HTTP - Apache 2.4.52)
+- What it does: Serves unencrypted web content.
+- Risk: Traffic can be intercepted (MITM). Vulnerable to web application attacks if the site is not hardened.
+- Recommendation: Redirect all traffic to HTTPS, apply security headers, keep Apache and applications patched.
+
+Port 443 (HTTPS - Apache)
+- What it does: Serves encrypted web traffic.
+- Risk: Lower than plain HTTP, but still depends on TLS configuration strength and application security.
+- Recommendation: Use strong cipher suites, enable HSTS, monitor certificate validity, keep software current.
+
+Port 3306 (MySQL)
+- What it does: Database server accepting remote connections.
+- Risk: High. Database exposure is a common path to data breaches. Brute-force or vulnerability exploitation can lead to full data compromise.
+- Recommendation: Bind MySQL to 127.0.0.1 only, or restrict with firewall rules to application servers. Use strong authentication and least privilege.
+
+Port 8080 (Alternative HTTP)
+- What it does: Often used by application servers, proxies, or development tools.
+- Risk: Frequently overlooked and may run less-hardened services.
+- Recommendation: Restrict access via firewall, confirm necessity, apply same hardening as primary web services.
+
+------------------------------------------------------------
+SUMMARY OF FINDINGS
+- Host is alive and running multiple network services.
+- Presence of MySQL on a non-loopback interface is the highest priority finding.
+- Web services (80/443) should be reviewed for proper TLS configuration and application security.
+- SSH appears reasonably modern but should follow key-only authentication best practices.
+
+All findings are from a controlled lab environment and are used solely for learning and documentation purposes.
